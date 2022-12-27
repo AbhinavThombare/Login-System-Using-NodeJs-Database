@@ -32,10 +32,7 @@ const userSchema = new mongoose.Schema({
             required: true,
         }
     }],
-    filesData: [{
-        fileName:{type:String},
-        fileContent:{tyype:String}
-    }]
+    filesData: [{fileName:String,fileContent:String}]
 
 })
 
@@ -65,9 +62,11 @@ userSchema.statics.findCredential = async function (email, password) {
 
 userSchema.statics.storeFile = async function (email, fileName, fileContent) {
     const user = await User.findOne({ email })
+    var file = {fileName:fileName,fileContent:fileContent}
     if(user){
-        user.filesData= user.filesData.push({fileName},{fileContent})
-        console.log(user)
+        user.filesData.push(file)
+        // console.log(user)
+        await user.save()
         return user
     }
     else {

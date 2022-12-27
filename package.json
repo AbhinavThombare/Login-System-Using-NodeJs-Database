@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js"
+    "start": "nodemon src/index.js"
+
   },
   "author": "",
   "license": "ISC",
@@ -19,5 +20,8 @@
     "node-stream-zip": "^1.15.0",
     "pdf-parse": "^1.1.1",
     "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
   }
 }

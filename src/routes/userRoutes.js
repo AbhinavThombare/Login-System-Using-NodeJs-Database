@@ -2,16 +2,8 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const router = express.Router()
 const User = require('../models/user')
-const jwt = require('jsonwebtoken')
 const auth = require('../middleware/auth')
-const fs = require('fs')
-const multer = require('multer')
-const pdfParse = require('pdf-parse')
-const StreamZip = require('node-stream-zip');
-var xml2js = require('xml2js');
-var parser = new xml2js.Parser();
-
-const userFiles = './user_upload/'
+const { async } = require('node-stream-zip')
 
 router.post('/api/users', bodyParser.json(), async (req, res) => {
     const user = new User(req.body.data)
@@ -53,7 +45,7 @@ router.post('/api/user/login', async (req, res) => {
     }
 })
 
-router.post('/api/user/logout', auth, async (req, res) => {
+router.post('/api/user/logout/:token', auth, async (req, res) => {
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
             return token.token !== req.token
@@ -66,13 +58,17 @@ router.post('/api/user/logout', auth, async (req, res) => {
     }
 })
 
-router.post('/api/user/fileupload', auth, async (req, res) => {
+router.post('/api/user/fileupload/:token', auth, async (req, res) => {
 
     const file = req.body;
     const email = req.user.email
     try {
         const user = await User.storeFile(email, file.fileName, file.fileContent)
-            return res.status(200).send('File Uploaded Successfully.')
+        if (!user) {
+            return res.status(400)
+        }
+
+        return res.status(200).send({ message: 'File Uploaded Successfully.' })
     } catch (error) {
         return res.status(401).send(error.message)
     }
@@ -115,6 +111,33 @@ router.post('/api/user/fileupload', auth, async (req, res) => {
     //         })
     //     })
     // })
+
+})
+
+router.get('/api/user/files/:token',auth,async (req, res) => {
+    const email = req.user.email;
+    try {
+        const user = await User.findOne({ email })
+        const files= user.filesData.map(file => { 
+            return(file.fileName)
+        })
+        return res.status(200).send(files)
+    } catch (error) {
+        return res.status(400).send(error.message)
+    }
+})
+
+router.get('/api/user/file/:filename/:token',auth,async(req,res) => {
+    const email = req.user.email;
+    const filename = req.params.filename;
+    const user = await User.findOne({email})
+
+    const file = user.filesData.find((file) => {
+        return(file.fileName === filename)
+    })
+
+    console.log(file)
+    return res.status(200).send(file)
 
 })
 

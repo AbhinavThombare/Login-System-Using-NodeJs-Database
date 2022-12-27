@@ -2,8 +2,7 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/user')
 
 const auth = async (req, res, next) => {
-    const token = req.body.token
-   
+    const token = req.params.token
     // console.log(token)
     const decoded = jwt.verify(token, 'thisisloginsystem')
 

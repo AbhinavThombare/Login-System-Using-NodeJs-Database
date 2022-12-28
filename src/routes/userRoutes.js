@@ -4,6 +4,10 @@ const router = express.Router()
 const User = require('../models/user')
 const auth = require('../middleware/auth')
 const { async } = require('node-stream-zip')
+const fs = require('fs')
+
+userFiles='./user_upload/';
+
 
 router.post('/api/users', bodyParser.json(), async (req, res) => {
     const user = new User(req.body.data)
@@ -119,7 +123,7 @@ router.get('/api/user/files/:token',auth,async (req, res) => {
     try {
         const user = await User.findOne({ email })
         const files= user.filesData.map(file => { 
-            return(file.fileName)
+            return(file)
         })
         return res.status(200).send(files)
     } catch (error) {
@@ -127,18 +131,34 @@ router.get('/api/user/files/:token',auth,async (req, res) => {
     }
 })
 
-router.get('/api/user/file/:filename/:token',auth,async(req,res) => {
+router.get('/api/user/file/:id/:filename/:token',auth,async(req,res) => {
     const email = req.user.email;
+    const id = req.params.id
     const filename = req.params.filename;
     const user = await User.findOne({email})
 
     const file = user.filesData.find((file) => {
-        return(file.fileName === filename)
+       return(file.id === id)
     })
 
-    console.log(file)
+    // console.log(file)
+
     return res.status(200).send(file)
 
+
+    // const base64data = file.fileContent.replace(/^data:.*,/, '');
+    // fs.writeFile(userFiles + file.fileName, base64data, 'base64', (err) => {
+    //     if (err) {
+    //         console.log(err);
+    //         res.sendStatus(500);
+    //     } else {
+    //         res.set('Location', userFiles + file.fileName);
+    //         console.log(userFiles + file.fileName)
+    //         return res.status(200).send(file)
+    //     }
+    // });
+
 })
+
 
 module.exports = router;

@@ -160,5 +160,35 @@ router.get('/api/user/file/:id/:filename/:token',auth,async(req,res) => {
 
 })
 
+router.get('/api/user/update/:email',async(req,res) => {
+    const email = req.params.email;
+
+    const user = await User.findOne({email});
+
+    if(!user) {
+        return res.status(400).send({msg:'User not Found'})
+    }
+    return res.status(200).send()
+
+})
+
+router.post('/api/user/update',async(req,res) => {
+    const updateData = req.body;
+
+    const email = updateData.email
+    const user = await User.findOne({email});
+
+    user.password = updateData.password
+
+    await user.save()
+
+    return res.status(200).send()
+    // if(!user) {
+    //     return res.status(400).send({msg:'User not Found'})
+    // }
+    // return res.status(200).send()
+
+})
+
 
 module.exports = router;

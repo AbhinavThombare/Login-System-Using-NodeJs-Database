@@ -1,0 +1,5 @@
+Step 1 : You have to clone / download Login-System-Using-NodeJs Repo in one folder.
+Step 2 : Then You have to clone / download Login-System-Using-NodeJs-Database Repo in other folder.
+Step 3 : You have to install mongoDB tools for database.
+Step 4 : After download both project you have run command in both project terminal is 'npm i'
+Step 5 : then run project indivisually for angular use 'npm run ng serve' and for nodejs use 'npm start'
